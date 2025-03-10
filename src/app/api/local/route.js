@@ -1,9 +1,9 @@
-import { createConnection } from "../../../lib/mysql";
+import { createConnection } from "../../lib/mysql";
 
 export async function GET() {
   try {
     const connection = await createConnection();
-    const [rows] = await connection.execute("SELECT id_local, nome, endereco FROM Local");
+    const [rows] = await connection.execute("SELECT * FROM Local");
 
     return new Response(
       JSON.stringify({ locais: rows }),
@@ -24,38 +24,27 @@ export async function POST(req) {
 
     if (!nome || !endereco) {
       return new Response(
-        JSON.stringify({ error: "Todos os campos são obrigatórios." }),
+        JSON.stringify({ error: 'Todos os campos são obrigatórios.' }),
         { status: 400 }
       );
     }
 
     const connection = await createConnection();
-
-    // Verificar se o local já existe pelo nome
-    const [existingLocals] = await connection.execute("SELECT * FROM Local WHERE nome = ?", [nome]);
-    if (existingLocals.length > 0) {
-      return new Response(
-        JSON.stringify({ error: "Local já existe." }),
-        { status: 400 }
-      );
-    }
-
-    // Inserir novo local
     const [result] = await connection.execute(
       "INSERT INTO Local (nome, endereco) VALUES (?, ?)",
       [nome, endereco]
     );
 
-    const newLocal = { id: result.insertId, nome, endereco };
+    const newLocal = { id_local: result.insertId, nome, endereco };
 
     return new Response(
       JSON.stringify({ message: "Local criado", local: newLocal }),
       { status: 201 }
     );
   } catch (error) {
-    console.error("Erro ao cadastrar local:", error);
+    console.error("Erro ao criar local:", error);
     return new Response(
-      JSON.stringify({ error: "Erro ao cadastrar local", details: error.message }),
+      JSON.stringify({ error: "Erro ao criar local", details: error.message }),
       { status: 500 }
     );
   }

@@ -1,11 +1,9 @@
-import { createConnection } from "../../../lib/mysql";
+import { createConnection } from "../../lib/mysql";
 
 export async function GET() {
   try {
     const connection = await createConnection();
-    const [rows] = await connection.execute(
-      "SELECT id_venda, id_cliente, data_venda, valor_total FROM Venda"
-    );
+    const [rows] = await connection.execute("SELECT * FROM Venda");
 
     return new Response(
       JSON.stringify({ vendas: rows }),
@@ -24,7 +22,7 @@ export async function POST(req) {
   try {
     const { id_cliente, valor_total } = await req.json();
 
-    if (!id_cliente || !valor_total) {
+    if (!id_cliente || valor_total == null) {
       return new Response(
         JSON.stringify({ error: "Todos os campos são obrigatórios." }),
         { status: 400 }
@@ -32,23 +30,26 @@ export async function POST(req) {
     }
 
     const connection = await createConnection();
-
-    // Inserir nova venda
     const [result] = await connection.execute(
-      "INSERT INTO Venda (id_cliente, valor_total) VALUES (?, ?)",
+      "INSERT INTO Venda (id_cliente, data_venda, valor_total) VALUES (?, NOW(), ?)",
       [id_cliente, valor_total]
     );
 
-    const newVenda = { id: result.insertId, id_cliente, valor_total };
+    const newVenda = {
+      id_venda: result.insertId,
+      id_cliente,
+      data_venda: new Date().toISOString(),
+      valor_total,
+    };
 
     return new Response(
-      JSON.stringify({ message: "Venda registrada com sucesso", venda: newVenda }),
+      JSON.stringify({ message: "Venda criada", venda: newVenda }),
       { status: 201 }
     );
   } catch (error) {
-    console.error("Erro ao registrar venda:", error);
+    console.error("Erro ao criar venda:", error);
     return new Response(
-      JSON.stringify({ error: "Erro ao registrar venda", details: error.message }),
+      JSON.stringify({ error: "Erro ao criar venda", details: error.message }),
       { status: 500 }
     );
   }

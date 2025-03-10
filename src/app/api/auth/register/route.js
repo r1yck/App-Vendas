@@ -5,6 +5,7 @@ export async function POST(req) {
   try {
     const { nome, email, senha, telefone, endereco, data_nascimento } = await req.json(); // Capturar todos os dados
 
+    // Validação de campos obrigatórios
     if (!nome || !email || !senha || !telefone || !endereco || !data_nascimento) {
       return new Response(
         JSON.stringify({ error: 'Todos os campos são obrigatórios.' }),

@@ -8,6 +8,9 @@ interface Cliente {
   id_cliente: number;
   nome: string;
   email: string;
+  telefone: string;
+  endereco: string;
+  data_nascimento: string;
 }
 
 const ClientesPage = () => {
@@ -36,7 +39,7 @@ const ClientesPage = () => {
 
   return (
     <div className={styles.container}>
-      <Navbar /> {/* Navbar adicionada aqui */}
+      <Navbar />
       <h1 className={styles.heading}>Lista de Clientes</h1>
       {loading ? (
         <p>Carregando...</p>
@@ -51,6 +54,9 @@ const ClientesPage = () => {
               <th>ID</th>
               <th>Nome</th>
               <th>Email</th>
+              <th>Telefone</th>
+              <th>Endereço</th>
+              <th>Data de Nascimento</th>
             </tr>
           </thead>
           <tbody>
@@ -59,6 +65,9 @@ const ClientesPage = () => {
                 <td>{cliente.id_cliente}</td>
                 <td>{cliente.nome}</td>
                 <td>{cliente.email}</td>
+                <td>{cliente.telefone}</td>
+                <td>{cliente.endereco}</td>
+                <td>{new Date(cliente.data_nascimento).toLocaleDateString()}</td>
               </tr>
             ))}
           </tbody>

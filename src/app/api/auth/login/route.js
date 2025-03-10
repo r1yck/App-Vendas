@@ -20,6 +20,8 @@ export async function POST(req) {
       [email]
     );
 
+    console.log('Clientes encontrados:', clients); // Adicione este log
+
     if (clients.length === 0) {
       return new Response(
         JSON.stringify({ error: "Email ou senha incorretos." }),
@@ -31,6 +33,9 @@ export async function POST(req) {
 
     // Verificar se a senha informada corresponde à senha armazenada no banco
     const isPasswordValid = await bcrypt.compare(password, client.senha);
+
+    console.log('Senha armazenada:', client.senha); // Adicione este log
+    console.log('Senha fornecida:', password); // Adicione este log
 
     if (!isPasswordValid) {
       return new Response(
