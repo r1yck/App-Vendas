@@ -15,7 +15,7 @@ const Navbar = () => {
             <button onClick={() => router.push("/home")}>Home</button>
           </li>
           <li>
-            <button onClick={() => router.push("/classificacao")}>Classificação</button>
+            <button onClick={() => router.push("/classificacao")}>Classificações</button>
           </li>
           <li>
             <button onClick={() => router.push("/clientes")}>Clientes</button>
@@ -24,16 +24,16 @@ const Navbar = () => {
             <button onClick={() => router.push("/compras")}>Compras</button>
           </li>
           <li>
-            <button onClick={() => router.push("/fornecedor")}>Fornecedor</button>
+            <button onClick={() => router.push("/fornecedor")}>Fornecedores</button>
           </li>
           <li>
-            <button onClick={() => router.push("/local")}>Local</button>
+            <button onClick={() => router.push("/local")}>Locais</button>
           </li>
           <li>
-            <button onClick={() => router.push("/produto")}>Produto</button>
+            <button onClick={() => router.push("/produto")}>Produtos</button>
           </li>
           <li>
-            <button onClick={() => router.push("/venda")}>Venda</button>
+            <button onClick={() => router.push("/venda")}>Vendas</button>
           </li>
         </ul>
       </nav>
