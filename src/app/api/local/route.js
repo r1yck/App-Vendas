@@ -24,7 +24,7 @@ export async function POST(req) {
 
     if (!nome || !endereco) {
       return new Response(
-        JSON.stringify({ error: 'Todos os campos são obrigatórios.' }),
+        JSON.stringify({ error: "Todos os campos são obrigatórios." }),
         { status: 400 }
       );
     }
@@ -35,7 +35,11 @@ export async function POST(req) {
       [nome, endereco]
     );
 
-    const newLocal = { id_local: result.insertId, nome, endereco };
+    const newLocal = {
+      id_local: result.insertId,
+      nome,
+      endereco,
+    };
 
     return new Response(
       JSON.stringify({ message: "Local criado", local: newLocal }),

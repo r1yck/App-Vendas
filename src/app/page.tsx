@@ -10,7 +10,7 @@ const HomeRedirect = () => {
     router.push("/login");
   }, [router]);
 
-  return null; // Não renderiza nada enquanto redireciona
+  return null; 
 };
 
 export default HomeRedirect;

@@ -17,6 +17,14 @@ const ProdutoPage = () => {
   const [produtos, setProdutos] = useState<Produto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [formData, setFormData] = useState({
+    id_fornecedor: "",
+    nome: "",
+    descricao: "",
+    preco: "",
+    quantidade_estoque: "",
+  });
+  const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
     const fetchProdutos = async () => {
@@ -37,10 +45,99 @@ const ProdutoPage = () => {
     fetchProdutos();
   }, []);
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const response = await fetch("/api/produto", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id_fornecedor: formData.id_fornecedor,
+        nome: formData.nome,
+        descricao: formData.descricao,
+        preco: parseFloat(formData.preco),
+        quantidade_estoque: parseInt(formData.quantidade_estoque, 10),
+      }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      alert("Produto registrado com sucesso!");
+      setFormData({
+        id_fornecedor: "",
+        nome: "",
+        descricao: "",
+        preco: "",
+        quantidade_estoque: "",
+      });
+      setShowForm(false); // Esconde o formulário após submissão
+    } else {
+      alert(`Erro ao registrar produto: ${data.error || 'Erro desconhecido'}`);
+    }
+  };
+
   return (
     <div className={styles.container}>
       <Navbar />
       <h1 className={styles.heading}>Lista de Produtos</h1>
+
+      {/* Botão para exibir formulário */}
+      <button onClick={() => setShowForm(!showForm)} className={styles.showFormButton}>
+        {showForm ? "Cancelar Cadastro" : "Cadastrar Novo Produto"}
+      </button>
+
+      {/* Exibe o formulário apenas se showForm for true */}
+      {showForm && (
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            name="id_fornecedor"
+            placeholder="ID do Fornecedor"
+            value={formData.id_fornecedor}
+            onChange={handleChange}
+            required
+          />
+          <input
+            type="text"
+            name="nome"
+            placeholder="Nome do Produto"
+            value={formData.nome}
+            onChange={handleChange}
+            required
+          />
+          <input
+            type="text"
+            name="descricao"
+            placeholder="Descrição do Produto"
+            value={formData.descricao}
+            onChange={handleChange}
+            required
+          />
+          <input
+            type="number"
+            name="preco"
+            placeholder="Preço do Produto"
+            value={formData.preco}
+            onChange={handleChange}
+            required
+          />
+          <input
+            type="number"
+            name="quantidade_estoque"
+            placeholder="Quantidade em Estoque"
+            value={formData.quantidade_estoque}
+            onChange={handleChange}
+            required
+          />
+          <button type="submit">Registrar Produto</button>
+        </form>
+      )}
+
       {loading ? (
         <p>Carregando...</p>
       ) : error ? (
@@ -52,6 +149,7 @@ const ProdutoPage = () => {
           <thead>
             <tr>
               <th>ID</th>
+              <th>Fornecedor</th>
               <th>Nome</th>
               <th>Descrição</th>
               <th>Preço</th>
@@ -62,6 +160,7 @@ const ProdutoPage = () => {
             {produtos.map((produto) => (
               <tr key={produto.id_produto}>
                 <td>{produto.id_produto}</td>
+                <td>{produto.id_fornecedor}</td>
                 <td>{produto.nome}</td>
                 <td>{produto.descricao}</td>
                 <td>R$ {produto.preco.toFixed(2)}</td>

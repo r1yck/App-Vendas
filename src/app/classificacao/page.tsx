@@ -17,6 +17,13 @@ const ClassificacaoPage = () => {
   const [classificacoes, setClassificacoes] = useState<Classificacao[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [formData, setFormData] = useState({
+    id_produto: "",
+    id_cliente: "",
+    nota: "",
+    comentario: "",
+  });
+  const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
     const fetchClassificacoes = async () => {
@@ -38,10 +45,88 @@ const ClassificacaoPage = () => {
     fetchClassificacoes();
   }, []);
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const response = await fetch("/api/classificacao", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id_produto: formData.id_produto,
+        id_cliente: formData.id_cliente,
+        nota: parseInt(formData.nota),
+        comentario: formData.comentario,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      alert("Classificação registrada com sucesso!");
+      setFormData({
+        id_produto: "",
+        id_cliente: "",
+        nota: "",
+        comentario: "",
+      });
+      setShowForm(false); // Esconde o formulário após submissão
+    } else {
+      alert(`Erro ao registrar classificação: ${data.error || 'Erro desconhecido'}`);
+    }
+  };
+
   return (
     <div className={styles.container}>
       <Navbar />
       <h1 className={styles.heading}>Lista de Classificações</h1>
+
+      {/* Botão para exibir formulário */}
+      <button onClick={() => setShowForm(!showForm)} className={styles.showFormButton}>
+        {showForm ? "Cancelar Cadastro" : "Cadastrar Nova Classificação"}
+      </button>
+
+      {/* Exibe o formulário apenas se showForm for true */}
+      {showForm && (
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            name="id_produto"
+            placeholder="ID do Produto"
+            value={formData.id_produto}
+            onChange={handleChange}
+            required
+          />
+          <input
+            type="text"
+            name="id_cliente"
+            placeholder="ID do Cliente"
+            value={formData.id_cliente}
+            onChange={handleChange}
+            required
+          />
+          <input
+            type="number"
+            name="nota"
+            placeholder="Nota (1-5)"
+            value={formData.nota}
+            onChange={handleChange}
+            required
+          />
+          <textarea
+            name="comentario"
+            placeholder="Comentário"
+            value={formData.comentario}
+            onChange={handleChange}
+            required
+          />
+          <button type="submit">Registrar Classificação</button>
+        </form>
+      )}
+
       {loading ? (
         <p>Carregando...</p>
       ) : error ? (

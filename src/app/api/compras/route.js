@@ -12,7 +12,6 @@ export async function GET() {
       { status: 200, headers: { "Content-Type": "application/json" } }
     );
   } catch (error) {
-    console.error("Erro ao buscar compras:", error);
     return new Response(
       JSON.stringify({ error: "Erro ao buscar compras", details: error.message }),
       { status: 500 }
@@ -31,10 +30,18 @@ export async function POST(req) {
       );
     }
 
+    // Verificando se valor_total é um número válido
+    if (isNaN(valor_total)) {
+      return new Response(
+        JSON.stringify({ error: "Valor total inválido." }),
+        { status: 400 }
+      );
+    }
+
     const connection = await createConnection();
     const [result] = await connection.execute(
       "INSERT INTO Compra (id_fornecedor, data_compra, valor_total) VALUES (?, NOW(), ?)",
-      [id_fornecedor, valor_total]
+      [id_fornecedor, parseFloat(valor_total)] // Garantindo que valor_total é numérico
     );
 
     return new Response(
@@ -49,3 +56,4 @@ export async function POST(req) {
     );
   }
 }
+
